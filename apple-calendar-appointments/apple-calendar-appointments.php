@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.9.10
+Version: 1.9.11
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.9.10'
+        '1.9.11'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.9.10',
+        '1.9.11',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.9.10'
+            '1.9.11'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.9.10',
+            '1.9.11',
             true
         );
     }
@@ -81,6 +81,7 @@ function aca_add_settings_page() {
 add_action('admin_menu', 'aca_add_settings_page');
 
 function aca_render_settings_page() {
+    $reservations = get_option('aca_reservations', []);
     ?>
     <div class="wrap">
         <h1>Apple Calendar Settings</h1>
@@ -168,6 +169,31 @@ function aca_render_settings_page() {
             </table>
             <?php submit_button(); ?>
         </form>
+        <h2>Reservations</h2>
+        <table id="aca-reservations-table" class="widefat">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Services</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($reservations)) { foreach ($reservations as $r) { ?>
+                <tr>
+                    <td><?php echo esc_html($r['name']); ?></td>
+                    <td><?php echo esc_html($r['phone']); ?></td>
+                    <td><?php echo esc_html($r['start']); ?></td>
+                    <td><?php echo esc_html($r['end']); ?></td>
+                    <td><?php echo esc_html(implode(', ', (array)$r['services'])); ?></td>
+                </tr>
+                <?php } } else { ?>
+                <tr><td colspan="5">No reservations yet.</td></tr>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
     <?php
 }
@@ -422,6 +448,15 @@ function aca_save_reservation_callback() {
         'phone'    => $phone,
     ];
     update_option('aca_reservations', $reservations);
+
+    $to = get_option('admin_email');
+    $subject = 'New Reservation Request';
+    $body  = "Name: $name\n";
+    $body .= "Phone: $phone\n";
+    $body .= "Start: $start\n";
+    $body .= "End: $end\n";
+    $body .= "Services: " . implode(', ', $services);
+    wp_mail($to, $subject, $body);
 
     wp_send_json_success(['end' => $end]);
 }
