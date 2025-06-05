@@ -8,6 +8,20 @@
         if(Array.isArray(opts.closedEvents)) {
             events = events.concat(opts.closedEvents);
         }
+        function updateTitle(){
+            var titleEl = document.getElementById('aca-calendar-title');
+            if(!titleEl) return;
+            var view = calendar.view;
+            if(view.type === 'timeGridDay'){
+                titleEl.textContent = view.title;
+            }else if(view.type === 'timeGridWeek' || view.type === 'dayGridMonth'){
+                var d = view.currentStart;
+                titleEl.textContent = d.toLocaleDateString(undefined, {month:'long', year:'numeric'});
+            }else{
+                titleEl.textContent = '';
+            }
+        }
+
         var calendar = new FullCalendar.Calendar(el, {
             initialView: 'timeGridWeek',
             headerToolbar: false,
@@ -48,19 +62,10 @@
                     calendar.changeView('timeGridDay', info.dateStr);
                 }
             },
-            datesSet: function(){
-                var titleEl = document.getElementById('aca-calendar-title');
-                if(titleEl){
-                    if(calendar.view.type === 'timeGridDay'){
-                        var fmt = calendar.view.title; // already full date
-                        titleEl.textContent = fmt;
-                    }else{
-                        titleEl.textContent = '';
-                    }
-                }
-            }
+            datesSet: updateTitle
         });
         calendar.render();
+        updateTitle();
         var controls = document.getElementById('aca-calendar-controls');
         if(controls){
             controls.addEventListener('click', function(e){
