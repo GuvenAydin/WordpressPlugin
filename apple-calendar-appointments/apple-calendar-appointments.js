@@ -24,6 +24,7 @@
                 hour12: false
             },
             eventColor: 'orange',
+            allDaySlot: false,
             businessHours: {
                 startTime: opts.workStart || '09:00',
                 endTime: opts.workEnd || '20:00',
@@ -31,8 +32,12 @@
             },
             selectable: true,
             selectOverlap: false,
+            selectAllow: function(info){
+                return info.view.type !== 'dayGridMonth';
+            },
             events: events,
             select: function(info){
+                if(info.view.type === 'dayGridMonth') return;
                 showReservationForm(info.startStr);
             }
         });
