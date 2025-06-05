@@ -42,6 +42,22 @@
             select: function(info){
                 if(info.view.type === 'dayGridMonth') return;
                 showReservationForm(info.startStr);
+            },
+            dateClick: function(info){
+                if(info.view.type === 'dayGridMonth'){
+                    calendar.changeView('timeGridDay', info.dateStr);
+                }
+            },
+            datesSet: function(){
+                var titleEl = document.getElementById('aca-calendar-title');
+                if(titleEl){
+                    if(calendar.view.type === 'timeGridDay'){
+                        var fmt = calendar.view.title; // already full date
+                        titleEl.textContent = fmt;
+                    }else{
+                        titleEl.textContent = '';
+                    }
+                }
             }
         });
         calendar.render();
@@ -51,7 +67,14 @@
                 var nav = e.target.getAttribute('data-nav');
                 if(nav === 'prev'){ calendar.prev(); return; }
                 if(nav === 'next'){ calendar.next(); return; }
-                if(nav === 'today'){ calendar.today(); return; }
+                if(nav === 'today'){ 
+                    calendar.today();
+                    if(calendar.view.type === 'dayGridMonth' || calendar.view.type === 'timeGridWeek'){
+                        el.classList.add('aca-blink');
+                        el.addEventListener('animationend', function rm(){ el.classList.remove('aca-blink'); el.removeEventListener('animationend', rm); });
+                    }
+                    return; 
+                }
                 var view = e.target.getAttribute('data-view');
                 if(!view) return;
                 if(view === 'day') calendar.changeView('timeGridDay');

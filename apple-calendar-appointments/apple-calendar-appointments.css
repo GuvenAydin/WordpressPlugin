@@ -1,6 +1,17 @@
-#aca-calendar-controls{
-    text-align:center;
+#aca-calendar-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
     margin-bottom:10px;
+}
+#aca-calendar-title{
+    font-weight:600;
+    margin-right:auto;
+}
+#aca-calendar-controls{
+    display:flex;
+    gap:5px;
 }
 #aca-calendar-controls button{
     margin:0 5px;
@@ -39,4 +50,13 @@
     background-color:#ffeaea;
     background-image:repeating-linear-gradient(45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px),
                      repeating-linear-gradient(-45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px);
+}
+
+.aca-blink{
+    animation: aca-blink 0.6s ease-in-out 2;
+}
+
+@keyframes aca-blink{
+    from{background-color:#fff3cd;}
+    to{background-color:transparent;}
 }
