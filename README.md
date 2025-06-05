@@ -1,6 +1,6 @@
 # WordPress Plugin: Apple Calendar Appointments
 
-This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.7.1 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
+This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.7.2 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
 Separate JavaScript files are included for the public calendar and the admin services table.
 
 ## Installation
@@ -11,7 +11,7 @@ Separate JavaScript files are included for the public calendar and the admin ser
 
 ## Usage
 
-In the settings page you can define your daily working hours, a lunch break, specific days off and weekly days off such as weekends. These settings are used to highlight unavailable time periods on the calendar so visitors see when you are closed.
+In the settings page you can define your daily working hours, a lunch break, specific days off and weekly days off such as weekends. The list of specific days off is managed in its own table so you can easily add, edit or remove individual dates. These settings are used to highlight unavailable time periods on the calendar so visitors see when you are closed.
 
 ### Services and reservations
 Services are managed from the settings page in a small table where you can add, edit or remove each entry. Each service has a name, price and duration in minutes. Visitors must enter their name and phone number and select one or more services when reserving a slot. The end time is calculated from the total service minutes. Reserved times appear in **gray** until you add the same appointment to your iCloud calendar, after which the reservation turns **green** to show it is confirmed.

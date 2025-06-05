@@ -29,6 +29,9 @@
 #aca-services-table{margin-top:10px;}
 #aca-service-form{margin-top:8px;}
 #aca-service-form input{margin-right:5px;}
+#aca-dayoff-table{margin-top:10px;}
+#aca-dayoff-form{margin-top:8px;}
+#aca-dayoff-form input{margin-right:5px;}
 
 .fc-bgevent.aca-closed,
 .fc-bg-event.aca-closed{

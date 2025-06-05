@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.7.1
+Version: 1.7.2
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.7.1'
+        '1.7.2'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.7.1',
+        '1.7.2',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.7.1'
+            '1.7.2'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.7.1',
+            '1.7.2',
             true
         );
     }
@@ -107,8 +107,24 @@ function aca_render_settings_page() {
                     <td><input type="time" id="aca_lunch_end" name="aca_lunch_end" value="<?php echo esc_attr(get_option('aca_lunch_end')); ?>" /></td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="aca_days_off">Days Off (YYYY-MM-DD, comma separated)</label></th>
-                    <td><input type="text" id="aca_days_off" name="aca_days_off" value="<?php echo esc_attr(get_option('aca_days_off')); ?>" class="regular-text" /></td>
+                    <th scope="row">Days Off</th>
+                    <td>
+                        <input type="hidden" id="aca_days_off" name="aca_days_off" value="<?php echo esc_attr(get_option('aca_days_off')); ?>" />
+                        <table id="aca-dayoff-table" class="widefat">
+                            <thead>
+                                <tr>
+                                    <th>Date (YYYY-MM-DD)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="aca-dayoff-form">
+                            <input type="hidden" id="aca-dayoff-index" value="" />
+                            <input type="date" id="aca-dayoff-date" />
+                            <button type="button" id="aca-dayoff-add" class="button">Add Day</button>
+                        </div>
+                    </td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Weekly Days Off</th>
