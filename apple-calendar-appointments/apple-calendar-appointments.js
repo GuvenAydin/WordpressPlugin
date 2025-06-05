@@ -60,6 +60,8 @@
             dateClick: function(info){
                 if(info.view.type === 'dayGridMonth'){
                     calendar.changeView('timeGridDay', info.dateStr);
+                } else {
+                    showReservationForm(info.dateStr);
                 }
             },
             datesSet: updateTitle
@@ -128,7 +130,6 @@
                     if(s && parseInt(s.duration)) minutes += parseInt(s.duration);
                 });
                 if(!minutes) return;
-                var end = new Date(new Date(start).getTime() + minutes*60000).toISOString();
                 var data = new FormData();
                 data.append('action','aca_save_reservation');
                 data.append('start', start);
@@ -138,9 +139,9 @@
                 fetch(opts.ajaxUrl, {method:'POST', body:data})
                     .then(function(r){ return r.json(); })
                     .then(function(res){
-                        var eend = end;
-                        if(res && res.success && res.data && res.data.end){ eend = res.data.end; }
-                        calendar.addEvent({title:'Reserved', start:start, end:eend, color:'gray'});
+                        if(res && res.success){
+                            alert('Thank you! When your appointment is approved it will show up on the calendar.');
+                        }
                         modal.remove();
                     })
                     .catch(function(){ modal.remove(); });
