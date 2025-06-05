@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.7.3
+Version: 1.8.0
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.7.3'
+        '1.8.0'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.7.3',
+        '1.8.0',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.7.3'
+            '1.8.0'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.7.3',
+            '1.8.0',
             true
         );
     }
@@ -114,6 +114,7 @@ function aca_render_settings_page() {
                             <thead>
                                 <tr>
                                     <th>Date (YYYY-MM-DD)</th>
+                                    <th>Name</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -122,6 +123,7 @@ function aca_render_settings_page() {
                         <div id="aca-dayoff-form">
                             <input type="hidden" id="aca-dayoff-index" value="" />
                             <input type="date" id="aca-dayoff-date" />
+                            <input type="text" id="aca-dayoff-name" placeholder="Name" />
                             <button type="button" id="aca-dayoff-add" class="button">Add Day</button>
                         </div>
                     </td>
@@ -240,6 +242,22 @@ function aca_get_services() {
     return $services;
 }
 
+function aca_get_days_off() {
+    $raw = get_option('aca_days_off');
+    $out = [];
+    if ($raw) {
+        foreach (preg_split('/\r?\n/', $raw) as $line) {
+            $parts = array_map('trim', explode('|', $line, 2));
+            if ($parts[0] === '') continue;
+            $out[] = [
+                'date' => $parts[0],
+                'name' => $parts[1] ?? '',
+            ];
+        }
+    }
+    return $out;
+}
+
 function aca_render_events() {
     $url    = get_option('aca_ical_url');
     $events = aca_fetch_ical_events($url);
@@ -249,7 +267,7 @@ function aca_render_events() {
     $work_end    = get_option('aca_work_end', '20:00');
     $lunch_start = get_option('aca_lunch_start');
     $lunch_end   = get_option('aca_lunch_end');
-    $days_off       = get_option('aca_days_off');
+    $days_off_data  = aca_get_days_off();
     $days_off_week  = (array) get_option('aca_days_off_week', []);
     $reservations   = get_option('aca_reservations', []);
 
@@ -274,10 +292,7 @@ function aca_render_events() {
         $week_off = array_map('intval', $days_off_week);
         $days = array_values(array_diff(range(0, 6), $week_off));
         if (!empty($days)) {
-            $dates_off = [];
-            if (!empty($days_off)) {
-                $dates_off = array_filter(array_map('trim', explode(',', $days_off)));
-            }
+            $dates_off = array_column($days_off_data, 'date');
             $startDate = new DateTime('now', new DateTimeZone('UTC'));
             $startDate->modify('-1 year');
             $endDate = new DateTime('now', new DateTimeZone('UTC'));
@@ -308,17 +323,17 @@ function aca_render_events() {
         ];
     }
 
-    if (!empty($days_off)) {
-        $dates = array_map('trim', explode(',', $days_off));
-        foreach ($dates as $d) {
-            if ($d === '') continue;
+    if (!empty($days_off_data)) {
+        foreach ($days_off_data as $off) {
+            $d = $off['date'];
+            $name = $off['name'] !== '' ? $off['name'] : 'Day Off';
             $closed[] = [
-                'title'   => 'Day Off',
-                'display' => 'background',
-                'start'   => $d . 'T00:00:00',
-                'end'     => $d . 'T23:59:59',
+                'title'     => $name,
+                'start'     => $d . 'T00:00:00',
+                'end'       => $d . 'T23:59:59',
+                'allDay'    => true,
                 'className' => 'aca-closed',
-                'color'   => '#ffeaea',
+                'overlap'   => false,
             ];
         }
     }

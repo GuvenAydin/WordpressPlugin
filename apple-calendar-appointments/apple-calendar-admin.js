@@ -84,14 +84,16 @@
         var dayTable = document.getElementById('aca-dayoff-table');
         if(dayTextarea && dayTable){
             var dayField = document.getElementById('aca-dayoff-date');
+            var dayNameField = document.getElementById('aca-dayoff-name');
             var dayAdd = document.getElementById('aca-dayoff-add');
             var dayIndex = document.getElementById('aca-dayoff-index');
 
             function parseDays(){
                 if(!dayTextarea.value) return [];
-                return dayTextarea.value.split(',').map(function(d){
-                    return d.trim();
-                }).filter(function(d){return d;});
+                return dayTextarea.value.split(/\n+/).map(function(l){
+                    var p = l.split('|');
+                    return {date:(p[0]||'').trim(), name:(p[1]||'').trim()};
+                }).filter(function(o){ return o.date; });
             }
 
             function renderDays(){
@@ -100,7 +102,8 @@
                 tbody.innerHTML = '';
                 arr.forEach(function(d,i){
                     var tr = document.createElement('tr');
-                    tr.innerHTML = '<td>'+d+'</td>'+
+                    tr.innerHTML = '<td>'+d.date+'</td>'+
+                                   '<td>'+d.name+'</td>'+
                                    '<td><button type="button" class="edit" data-index="'+i+'">Edit</button> '+
                                    '<button type="button" class="delete" data-index="'+i+'">Delete</button></td>';
                     tbody.appendChild(tr);
@@ -108,23 +111,26 @@
             }
 
             function saveDays(arr){
-                dayTextarea.value = arr.join(', ');
+                var lines = arr.map(function(o){ return o.date+'|'+o.name; });
+                dayTextarea.value = lines.join('\n');
                 renderDays();
             }
 
             dayAdd.addEventListener('click', function(){
-                var val = dayField.value.trim();
-                if(!val) return;
+                var dateVal = dayField.value.trim();
+                if(!dateVal) return;
+                var nameVal = dayNameField.value.trim();
                 var arr = parseDays();
                 var idx = dayIndex.value;
                 if(idx !== ''){
-                    arr[idx] = val;
+                    arr[idx] = {date:dateVal, name:nameVal};
                     dayIndex.value = '';
                     dayAdd.textContent = 'Add Day';
                 } else {
-                    arr.push(val);
+                    arr.push({date:dateVal, name:nameVal});
                 }
                 dayField.value = '';
+                dayNameField.value = '';
                 saveDays(arr);
             });
 
@@ -136,7 +142,9 @@
                 } else if(e.target.classList.contains('edit')){
                     var arr = parseDays();
                     var idx = parseInt(e.target.getAttribute('data-index'));
-                    dayField.value = arr[idx];
+                    var item = arr[idx];
+                    dayField.value = item.date;
+                    dayNameField.value = item.name;
                     dayIndex.value = idx;
                     dayAdd.textContent = 'Update Day';
                 }
