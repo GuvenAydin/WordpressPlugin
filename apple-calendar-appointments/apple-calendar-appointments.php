@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.9.11
+Version: 1.9.12
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -10,13 +10,32 @@ Author: OpenAI
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
+// Create reservations table on activation
+function aca_activate() {
+    global $wpdb;
+    $table = $wpdb->prefix . 'aca_reservations';
+    $charset = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE IF NOT EXISTS $table (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        name varchar(255) NOT NULL,
+        phone varchar(100) NOT NULL,
+        start datetime NOT NULL,
+        end datetime NOT NULL,
+        services text NOT NULL,
+        PRIMARY KEY (id)
+    ) $charset;";
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+}
+register_activation_hook(__FILE__, 'aca_activate');
+
 // Enqueue front-end styles
 function aca_enqueue_styles() {
     wp_enqueue_style(
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.9.11'
+        '1.9.12'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +53,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.9.11',
+        '1.9.12',
         true
     );
 }
@@ -47,13 +66,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.9.11'
+            '1.9.12'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.9.11',
+            '1.9.12',
             true
         );
     }
@@ -81,7 +100,9 @@ function aca_add_settings_page() {
 add_action('admin_menu', 'aca_add_settings_page');
 
 function aca_render_settings_page() {
-    $reservations = get_option('aca_reservations', []);
+    global $wpdb;
+    $table = $wpdb->prefix . 'aca_reservations';
+    $reservations = $wpdb->get_results("SELECT name, phone, start, end, services FROM $table ORDER BY start DESC", ARRAY_A);
     ?>
     <div class="wrap">
         <h1>Apple Calendar Settings</h1>
@@ -181,13 +202,13 @@ function aca_render_settings_page() {
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($reservations)) { foreach ($reservations as $r) { ?>
+                <?php if (!empty($reservations)) { foreach ($reservations as $r) { $srv = maybe_unserialize($r['services']); ?>
                 <tr>
                     <td><?php echo esc_html($r['name']); ?></td>
                     <td><?php echo esc_html($r['phone']); ?></td>
                     <td><?php echo esc_html($r['start']); ?></td>
                     <td><?php echo esc_html($r['end']); ?></td>
-                    <td><?php echo esc_html(implode(', ', (array)$r['services'])); ?></td>
+                    <td><?php echo esc_html(implode(', ', (array)$srv)); ?></td>
                 </tr>
                 <?php } } else { ?>
                 <tr><td colspan="5">No reservations yet.</td></tr>
@@ -300,7 +321,9 @@ function aca_render_events() {
     $lunch_end   = get_option('aca_lunch_end');
     $days_off_data  = aca_get_days_off();
     $days_off_week  = (array) get_option('aca_days_off_week', []);
-    $reservations   = get_option('aca_reservations', []);
+    global $wpdb;
+    $table = $wpdb->prefix . 'aca_reservations';
+    $reservations = $wpdb->get_results("SELECT start, end, services FROM $table", ARRAY_A);
 
     $services = array_values(aca_get_services());
 
@@ -439,15 +462,15 @@ function aca_save_reservation_callback() {
     $end_ts = strtotime($start) + $minutes * 60;
     $end    = gmdate('c', $end_ts);
 
-    $reservations = get_option('aca_reservations', []);
-    $reservations[] = [
-        'start'    => $start,
-        'end'      => $end,
-        'services' => $services,
+    global $wpdb;
+    $table = $wpdb->prefix . 'aca_reservations';
+    $wpdb->insert($table, [
         'name'     => $name,
         'phone'    => $phone,
-    ];
-    update_option('aca_reservations', $reservations);
+        'start'    => gmdate('Y-m-d H:i:s', strtotime($start)),
+        'end'      => gmdate('Y-m-d H:i:s', $end_ts),
+        'services' => maybe_serialize($services),
+    ]);
 
     $to = get_option('admin_email');
     $subject = 'New Reservation Request';
