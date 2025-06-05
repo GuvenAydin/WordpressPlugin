@@ -1,6 +1,7 @@
 # WordPress Plugin: Apple Calendar Appointments
 
 This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL.
+It has been tested with WordPress 6.5.
 
 ## Installation
 1. Upload `apple-calendar-appointments.php` to your WordPress `wp-content/plugins/` directory.

@@ -2,7 +2,9 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.0.0
+Version: 1.0.1
+Requires at least: 6.0
+Tested up to: 6.5
 Author: OpenAI
 */
 
@@ -88,6 +90,4 @@ function aca_render_events() {
     return ob_get_clean();
 }
 add_shortcode('apple_calendar_appointments', 'aca_render_events');
-
-?>
 
