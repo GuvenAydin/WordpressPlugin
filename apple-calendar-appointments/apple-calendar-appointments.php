@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.4.1
+Version: 1.5.0
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.4.1'
+        '1.5.0'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,11 +34,31 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.4.1',
+        '1.5.0',
         true
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_scripts');
+
+// Enqueue scripts on the settings page
+function aca_admin_enqueue_scripts($hook) {
+    if(isset($_GET['page']) && $_GET['page'] === 'aca-settings') {
+        wp_enqueue_style(
+            'aca-calendar',
+            plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
+            [],
+            '1.5.0'
+        );
+        wp_enqueue_script(
+            'aca-calendar-admin',
+            plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
+            [],
+            '1.5.0',
+            true
+        );
+    }
+}
+add_action('admin_enqueue_scripts', 'aca_admin_enqueue_scripts');
 
 // Register settings
 function aca_register_settings() {
@@ -99,8 +119,28 @@ function aca_render_settings_page() {
                     </td>
                 </tr>
                 <tr valign="top">
-                    <th scope="row"><label for="aca_services">Services (one per line: Name|Price|Minutes)</label></th>
-                    <td><textarea id="aca_services" name="aca_services" rows="5" cols="50" class="large-text"><?php echo esc_textarea(get_option('aca_services')); ?></textarea></td>
+                    <th scope="row">Services</th>
+                    <td>
+                        <input type="hidden" id="aca_services" name="aca_services" value="<?php echo esc_attr(get_option('aca_services')); ?>" />
+                        <table id="aca-services-table" class="widefat">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Minutes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div id="aca-service-form">
+                            <input type="hidden" id="aca-service-index" value="" />
+                            <input type="text" id="aca-service-name" placeholder="Name" />
+                            <input type="text" id="aca-service-price" placeholder="Price" />
+                            <input type="number" id="aca-service-minutes" placeholder="Minutes" min="0" />
+                            <button type="button" id="aca-service-add" class="button">Add Service</button>
+                        </div>
+                    </td>
                 </tr>
             </table>
             <?php submit_button(); ?>
