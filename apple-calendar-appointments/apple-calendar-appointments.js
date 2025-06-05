@@ -12,6 +12,17 @@
             headerToolbar: false,
             slotMinTime: opts.workStart || '09:00',
             slotMaxTime: opts.workEnd || '20:00',
+            slotLabelFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            eventTimeFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            eventColor: 'orange',
             businessHours: {
                 startTime: opts.workStart || '09:00',
                 endTime: opts.workEnd || '20:00',
