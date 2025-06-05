@@ -36,6 +36,7 @@
 #aca-reserve-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;}
 #aca-reserve-modal .aca-modal-content{background:#fff;padding:15px;border-radius:4px;max-width:300px;width:100%;}
 #aca-reserve-modal label{display:block;margin-bottom:4px;}
+#aca-time-info{margin-bottom:8px;font-weight:600;}
 #aca-reserve-modal button{margin-right:5px;margin-top:8px;}
 #aca-services-table{margin-top:10px;}
 #aca-service-form{margin-top:8px;}

@@ -57,13 +57,15 @@
             select: function(info){
                 if(!opts.reservationsEnabled) return;
                 if(info.view.type === 'dayGridMonth') return;
-                showReservationForm(info.startStr);
+                showReservationForm(info.startStr, info.endStr);
             },
             dateClick: function(info){
                 if(info.view.type === 'dayGridMonth'){
                     calendar.changeView('timeGridDay', info.dateStr);
                 } else if(opts.reservationsEnabled){
-                    showReservationForm(info.dateStr);
+                    var end = new Date(info.date);
+                    end.setMinutes(end.getMinutes() + 30);
+                    showReservationForm(info.dateStr, end.toISOString());
                 }
             },
             datesSet: updateTitle
@@ -105,10 +107,19 @@
             });
         }
 
-        function showReservationForm(start){
+        function showReservationForm(start, end){
+            var startDate = new Date(start);
             var modal = document.createElement('div');
             modal.id = 'aca-reserve-modal';
+            function formatRange(min){
+                var endDate = new Date(startDate.getTime() + min*60000);
+                var datePart = startDate.toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'});
+                var st = startDate.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',hour12:false});
+                var en = endDate.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',hour12:false});
+                return datePart+' | '+st+' - '+en;
+            }
             var html = '<div class="aca-modal-content"><h3>Select Services</h3>';
+            html += '<div id="aca-time-info">'+formatRange(0)+'</div>';
             services.forEach(function(s,i){
                 html += '<label><input type="checkbox" value="'+s.name+'"> '+s.name+' ('+s.price+' '+(s.duration?'/ '+s.duration+'min':'')+')</label><br>';
             });
@@ -120,17 +131,26 @@
             modal.innerHTML = html;
             document.body.appendChild(modal);
             modal.querySelector('#aca-reserve-cancel').addEventListener('click', function(){ modal.remove(); });
+            function updateInfo(){
+                var mins = 0;
+                modal.querySelectorAll('input[type=checkbox]:checked').forEach(function(c){
+                    var srv = services.find(function(o){ return o.name === c.value; });
+                    if(srv && parseInt(srv.duration)) mins += parseInt(srv.duration);
+                });
+                document.getElementById('aca-time-info').textContent = formatRange(mins||0);
+                return mins;
+            }
+            modal.addEventListener('change', function(e){
+                if(e.target.type === 'checkbox') updateInfo();
+            });
+
             modal.querySelector('#aca-reserve-save').addEventListener('click', function(){
                 var selected = [];
                 modal.querySelectorAll('input[type=checkbox]:checked').forEach(function(c){ selected.push(c.value); });
                 var name = modal.querySelector('#aca-name').value.trim();
                 var phone = modal.querySelector('#aca-phone').value.trim();
                 if(!selected.length || !name || !phone){ return; }
-                var minutes = 0;
-                selected.forEach(function(v){
-                    var s = services.find(function(o){ return o.name === v; });
-                    if(s && parseInt(s.duration)) minutes += parseInt(s.duration);
-                });
+                var minutes = updateInfo();
                 if(!minutes) return;
                 var data = new FormData();
                 data.append('action','aca_save_reservation');
