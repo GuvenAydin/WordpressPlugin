@@ -45,6 +45,9 @@
         var controls = document.getElementById('aca-calendar-controls');
         if(controls){
             controls.addEventListener('click', function(e){
+                var nav = e.target.getAttribute('data-nav');
+                if(nav === 'prev'){ calendar.prev(); return; }
+                if(nav === 'next'){ calendar.next(); return; }
                 var view = e.target.getAttribute('data-view');
                 if(!view) return;
                 if(view === 'day') calendar.changeView('timeGridDay');
