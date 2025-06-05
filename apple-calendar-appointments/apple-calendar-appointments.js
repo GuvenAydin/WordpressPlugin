@@ -33,7 +33,9 @@
             selectable: true,
             selectOverlap: false,
             selectAllow: function(info){
-                return info.view.type !== 'dayGridMonth';
+                if(info.view.type === 'dayGridMonth') return false;
+                var now = new Date();
+                return info.start >= now;
             },
             events: events,
             select: function(info){
