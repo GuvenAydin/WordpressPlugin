@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.2.1
+Version: 1.3.0
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.2.1'
+        '1.3.0'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.2.1',
+        '1.3.0',
         true
     );
 }
@@ -48,6 +48,8 @@ function aca_register_settings() {
     register_setting('aca_settings_group', 'aca_lunch_start');
     register_setting('aca_settings_group', 'aca_lunch_end');
     register_setting('aca_settings_group', 'aca_days_off');
+    register_setting('aca_settings_group', 'aca_days_off_week');
+    register_setting('aca_settings_group', 'aca_services');
 }
 add_action('admin_init', 'aca_register_settings');
 
@@ -87,6 +89,18 @@ function aca_render_settings_page() {
                 <tr valign="top">
                     <th scope="row"><label for="aca_days_off">Days Off (YYYY-MM-DD, comma separated)</label></th>
                     <td><input type="text" id="aca_days_off" name="aca_days_off" value="<?php echo esc_attr(get_option('aca_days_off')); ?>" class="regular-text" /></td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row">Weekly Days Off</th>
+                    <td>
+                        <?php $dow = (array) get_option('aca_days_off_week', []); $days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']; foreach($days as $i=>$n){ ?>
+                        <label><input type="checkbox" name="aca_days_off_week[]" value="<?php echo $i; ?>" <?php checked(in_array($i,$dow)); ?> /> <?php echo esc_html($n); ?></label><br />
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="aca_services">Services (one per line: Name|Price|Minutes)</label></th>
+                    <td><textarea id="aca_services" name="aca_services" rows="5" cols="50" class="large-text"><?php echo esc_textarea(get_option('aca_services')); ?></textarea></td>
                 </tr>
             </table>
             <?php submit_button(); ?>
@@ -162,7 +176,23 @@ function aca_render_events() {
     $work_end    = get_option('aca_work_end', '20:00');
     $lunch_start = get_option('aca_lunch_start');
     $lunch_end   = get_option('aca_lunch_end');
-    $days_off    = get_option('aca_days_off');
+    $days_off       = get_option('aca_days_off');
+    $days_off_week  = (array) get_option('aca_days_off_week', []);
+    $services_raw   = get_option('aca_services');
+    $reservations   = get_option('aca_reservations', []);
+
+    $services = [];
+    if ($services_raw) {
+        foreach (preg_split('/\r?\n/', $services_raw) as $line) {
+            $parts = array_map('trim', explode('|', $line));
+            if ($parts[0] === '') continue;
+            $services[] = [
+                'name'     => $parts[0],
+                'price'    => $parts[1] ?? '',
+                'duration' => $parts[2] ?? ''
+            ];
+        }
+    }
 
     $formatted = [];
     foreach ($events as $e) {
@@ -186,6 +216,15 @@ function aca_render_events() {
         ];
     }
 
+    if (!empty($days_off_week)) {
+        $closed[] = [
+            'title'      => 'Day Off',
+            'display'    => 'background',
+            'daysOfWeek' => array_map('intval', $days_off_week),
+            'color'      => '#ffeaea',
+        ];
+    }
+
     if (!empty($days_off)) {
         $dates = array_map('trim', explode(',', $days_off));
         foreach ($dates as $d) {
@@ -200,12 +239,26 @@ function aca_render_events() {
         }
     }
 
+    if (!empty($reservations)) {
+        foreach ($reservations as $res) {
+            if (empty($res['start']) || empty($res['end'])) continue;
+            $formatted[] = [
+                'title' => 'Reserved',
+                'start' => $res['start'],
+                'end'   => $res['end'],
+                'color' => 'green'
+            ];
+        }
+    }
+
     wp_enqueue_script('aca-calendar');
     wp_localize_script('aca-calendar', 'acaEvents', $formatted);
     wp_localize_script('aca-calendar', 'acaOptions', [
         'workStart'    => $work_start,
         'workEnd'      => $work_end,
         'closedEvents' => $closed,
+        'services'     => $services,
+        'ajaxUrl'      => admin_url('admin-ajax.php'),
     ]);
 
     ob_start();
@@ -218,4 +271,27 @@ function aca_render_events() {
     return ob_get_clean();
 }
 add_shortcode('apple_calendar_appointments', 'aca_render_events');
+
+// Handle reservation submission via AJAX
+function aca_save_reservation_callback() {
+    $start    = isset($_POST['start']) ? sanitize_text_field($_POST['start']) : '';
+    $end      = isset($_POST['end']) ? sanitize_text_field($_POST['end']) : '';
+    $services = isset($_POST['services']) ? array_map('sanitize_text_field', (array) $_POST['services']) : [];
+
+    if (!$start || !$end) {
+        wp_send_json_error();
+    }
+
+    $reservations = get_option('aca_reservations', []);
+    $reservations[] = [
+        'start'    => $start,
+        'end'      => $end,
+        'services' => $services,
+    ];
+    update_option('aca_reservations', $reservations);
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_aca_save_reservation', 'aca_save_reservation_callback');
+add_action('wp_ajax_nopriv_aca_save_reservation', 'aca_save_reservation_callback');
 

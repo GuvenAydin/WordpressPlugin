@@ -22,3 +22,7 @@
 .aca-calendar th,.aca-calendar td{padding:8px 12px;border-bottom:1px solid #e1e1e1;text-align:left;} 
 .aca-calendar th{background:#f5f5f5;font-weight:600;} 
 .aca-calendar tbody tr:nth-child(even){background:#fafafa;}
+#aca-reserve-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;}
+#aca-reserve-modal .aca-modal-content{background:#fff;padding:15px;border-radius:4px;max-width:300px;width:100%;}
+#aca-reserve-modal label{display:block;margin-bottom:4px;}
+#aca-reserve-modal button{margin-right:5px;margin-top:8px;}
