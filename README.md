@@ -1,6 +1,6 @@
 # WordPress Plugin: Apple Calendar Appointments
 
-This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.9.9 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
+This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.9.10 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
 Separate JavaScript files are included for the public calendar and the admin services table. The admin script now initializes even if the page is already loaded so the Services and Days Off tables work reliably.
 
 ## Installation
@@ -14,14 +14,14 @@ Separate JavaScript files are included for the public calendar and the admin ser
 In the settings page you can define your daily working hours, a lunch break, specific days off and weekly days off such as weekends. The list of specific days off is managed in its own table so you can easily add, edit or remove entries. Each day off has a date and an optional name, and that name appears on the calendar. These settings are used to highlight unavailable time periods on the calendar so visitors see when you are closed.
 
 ### Services and reservations
-Services are managed from the settings page in a small table where you can add, edit or remove each entry. Each service has a name, price and duration in minutes. Visitors must enter their name and phone number and select one or more services when reserving a slot. The end time is calculated from the total service minutes. After submitting the form they see a message explaining that the appointment will appear once approved. Reserved times appear in **gray** until you add the same appointment to your iCloud calendar, after which the reservation turns **green** to show it is confirmed.
+Services are managed from the settings page in a small table where you can add, edit or remove each entry. Each service has a name, price and duration in minutes. Visitors must enter their name and phone number and select one or more services when reserving a slot. The end time is calculated from the total service minutes. After submitting the form they see a message explaining that the appointment will appear once approved. Reserved times appear in **gray** until you add the same appointment to your iCloud calendar, after which the reservation turns **green** to show it is confirmed. Existing Apple Calendar events are displayed as plain gray bars without revealing their titles or descriptions.
 If you prefer not to accept reservations temporarily, uncheck the **Enable Reservations** box in the settings page. When disabled, visitors can still browse the calendar but cannot select times or submit the reservation form.
 
 The calendar hides the **All Day** row for a cleaner layout, and reservations are disabled while viewing the **Month** calendar.
 
 Navigation buttons let visitors move to the previous or next day, week or month depending on the current view.
 
-Lunch breaks and days off appear with a pink crosshatch background so visitors clearly see when you are closed. Each day off displays its custom name on the calendar. Lunch breaks show on every working day but disappear whenever that day is fully marked off. Version 1.9.9 ensures that custom days off also use the crosshatch background. A **Today** button lets you jump back to the current date at any time. The week view starts on Monday so Saturday and Sunday appear on the right-hand side.
+Lunch breaks and days off appear with a pink crosshatch background so visitors clearly see when you are closed. Each day off displays its custom name on the calendar. Lunch breaks show on every working day but disappear whenever that day is fully marked off. Version 1.9.10 ensures that custom days off also use the crosshatch background. A **Today** button lets you jump back to the current date at any time. The week view starts on Monday so Saturday and Sunday appear on the right-hand side.
 
 Past dates cannot be selected for reservations. Click an available time slot to open a popup where visitors choose their services and enter their contact details. The popup shows the selected date and time range (for example **June 5, 2025 | 13:00 - 13:30**) so customers know exactly which slot they are requesting.
 
