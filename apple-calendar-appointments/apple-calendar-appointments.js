@@ -8,6 +8,24 @@
         if(Array.isArray(opts.closedEvents)) {
             events = events.concat(opts.closedEvents);
         }
+
+        function isClosed(date){
+            if(!Array.isArray(opts.closedEvents)) return false;
+            for(var i=0;i<opts.closedEvents.length;i++){
+                var ev = opts.closedEvents[i];
+                if(Array.isArray(ev.daysOfWeek) && ev.daysOfWeek.indexOf(date.getUTCDay()) !== -1 && !ev.start && !ev.end){
+                    return true;
+                }
+                if(ev.start && ev.end){
+                    var st = new Date(ev.start);
+                    var en = new Date(ev.end);
+                    if(date >= st && date < en){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         function updateTitle(){
             var titleEl = document.getElementById('aca-calendar-title');
             if(!titleEl) return;
@@ -51,7 +69,9 @@
                 if(!opts.reservationsEnabled) return false;
                 if(info.view.type === 'dayGridMonth') return false;
                 var now = new Date();
-                return info.start >= now;
+                if(info.start < now) return false;
+                if(isClosed(info.start) || isClosed(info.end)) return false;
+                return true;
             },
             events: events,
             select: function(info){
@@ -62,7 +82,7 @@
             dateClick: function(info){
                 if(info.view.type === 'dayGridMonth'){
                     calendar.changeView('timeGridDay', info.dateStr);
-                } else if(opts.reservationsEnabled){
+                } else if(opts.reservationsEnabled && !isClosed(info.date)){
                     var end = new Date(info.date);
                     end.setMinutes(end.getMinutes() + 30);
                     showReservationForm(info.dateStr, end.toISOString());

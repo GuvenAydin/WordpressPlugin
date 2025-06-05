@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.9.13
+Version: 1.9.14
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -35,7 +35,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.9.13'
+        '1.9.14'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -53,7 +53,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.9.13',
+        '1.9.14',
         true
     );
 }
@@ -67,13 +67,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.9.13'
+            '1.9.14'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.9.13',
+            '1.9.14',
             true
         );
     }
@@ -371,7 +371,7 @@ function aca_render_events() {
                     'start'     => $date . 'T' . $lunch_start,
                     'end'       => $date . 'T' . $lunch_end,
                     'className' => 'aca-closed',
-                    'color'     => '#ffeaea',
+                    'color'     => 'rgb(255, 234, 234)',
                 ];
             }
         }
@@ -383,7 +383,7 @@ function aca_render_events() {
             'display'    => 'background',
             'daysOfWeek' => array_map('intval', $days_off_week),
             'className'  => 'aca-closed',
-            'color'      => '#ffeaea',
+            'color'      => 'rgb(255, 234, 234)',
         ];
     }
 
@@ -398,7 +398,7 @@ function aca_render_events() {
                 'allDay'    => true,
                 'display'   => 'background',
                 'className' => 'aca-closed',
-                'color'     => '#ffeaea',
+                'color'     => 'rgb(255, 234, 234)',
                 'overlap'   => false,
             ];
         }

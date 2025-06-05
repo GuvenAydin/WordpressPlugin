@@ -49,7 +49,7 @@
 .fc-bgevent.aca-closed,
 .fc-bg-event.aca-closed,
 .fc-event.aca-closed{
-    background-color:#ffeaea;
+    background-color:rgb(255, 234, 234);
     background-image:repeating-linear-gradient(45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px),
                      repeating-linear-gradient(-45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px);
 }
