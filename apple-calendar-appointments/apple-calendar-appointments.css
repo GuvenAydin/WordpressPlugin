@@ -29,3 +29,10 @@
 #aca-services-table{margin-top:10px;}
 #aca-service-form{margin-top:8px;}
 #aca-service-form input{margin-right:5px;}
+
+.fc-bgevent.aca-closed,
+.fc-bg-event.aca-closed{
+    background-color:#ffeaea;
+    background-image:repeating-linear-gradient(45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px),
+                     repeating-linear-gradient(-45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px);
+}

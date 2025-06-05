@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.6.0
+Version: 1.7.0
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.6.0'
+        '1.7.0'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.6.0',
+        '1.7.0',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.6.0'
+            '1.7.0'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.6.0',
+            '1.7.0',
             true
         );
     }
@@ -261,6 +261,7 @@ function aca_render_events() {
             'startTime'  => $lunch_start,
             'endTime'    => $lunch_end,
             'daysOfWeek' => [0,1,2,3,4,5,6],
+            'className'  => 'aca-closed',
             'color'      => '#ffeaea',
         ];
     }
@@ -270,6 +271,7 @@ function aca_render_events() {
             'title'      => 'Day Off',
             'display'    => 'background',
             'daysOfWeek' => array_map('intval', $days_off_week),
+            'className'  => 'aca-closed',
             'color'      => '#ffeaea',
         ];
     }
@@ -283,6 +285,7 @@ function aca_render_events() {
                 'display' => 'background',
                 'start'   => $d . 'T00:00:00',
                 'end'     => $d . 'T23:59:59',
+                'className' => 'aca-closed',
                 'color'   => '#ffeaea',
             ];
         }
@@ -315,6 +318,7 @@ function aca_render_events() {
     ob_start();
     echo '<div id="aca-calendar-controls">';
     echo '<button type="button" data-nav="prev">&lt;</button>';
+    echo '<button type="button" data-nav="today">Today</button>';
     echo '<button type="button" data-nav="next">&gt;</button>';
     echo '<button type="button" data-view="day">Day</button>';
     echo '<button type="button" data-view="week">Week</button>';

@@ -48,6 +48,7 @@
                 var nav = e.target.getAttribute('data-nav');
                 if(nav === 'prev'){ calendar.prev(); return; }
                 if(nav === 'next'){ calendar.next(); return; }
+                if(nav === 'today'){ calendar.today(); return; }
                 var view = e.target.getAttribute('data-view');
                 if(!view) return;
                 if(view === 'day') calendar.changeView('timeGridDay');
