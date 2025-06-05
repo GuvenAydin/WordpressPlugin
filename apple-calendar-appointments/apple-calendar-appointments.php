@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.9.7
+Version: 1.9.8
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.9.7'
+        '1.9.8'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.9.7',
+        '1.9.8',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.9.7'
+            '1.9.8'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.9.7',
+            '1.9.8',
             true
         );
     }
@@ -378,8 +378,8 @@ function aca_render_events() {
     echo '<button type="button" data-view="week">Week</button>';
     echo '<button type="button" data-view="month">Month</button>';
     echo '<button type="button" data-nav="prev">&lt;</button>';
-    echo '<button type="button" data-nav="next">&gt;</button>';
     echo '<button type="button" data-nav="today">Today</button>';
+    echo '<button type="button" data-nav="next">&gt;</button>';
     echo '</div>';
     echo '</div>';
     echo '<div id="aca-calendar"></div>';
