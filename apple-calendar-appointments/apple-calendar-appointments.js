@@ -67,13 +67,12 @@
                 var nav = e.target.getAttribute('data-nav');
                 if(nav === 'prev'){ calendar.prev(); return; }
                 if(nav === 'next'){ calendar.next(); return; }
-                if(nav === 'today'){ 
+                if(nav === 'today'){
                     calendar.today();
                     if(calendar.view.type === 'dayGridMonth' || calendar.view.type === 'timeGridWeek'){
-                        el.classList.add('aca-blink');
-                        el.addEventListener('animationend', function rm(){ el.classList.remove('aca-blink'); el.removeEventListener('animationend', rm); });
+                        blinkCurrentDay();
                     }
-                    return; 
+                    return;
                 }
                 var view = e.target.getAttribute('data-view');
                 if(!view) return;
@@ -82,6 +81,21 @@
                 else if(view === 'month') calendar.changeView('dayGridMonth');
             });
         }
+
+        function blinkCurrentDay(){
+            var iso = new Date().toISOString().split('T')[0];
+            var nodes = [];
+            if(calendar.view.type === 'dayGridMonth'){
+                nodes = el.querySelectorAll('.fc-daygrid-day[data-date="'+iso+'"]');
+            }else if(calendar.view.type === 'timeGridWeek'){
+                nodes = el.querySelectorAll('.fc-timegrid-col[data-date="'+iso+'"], .fc-col-header-cell[data-date="'+iso+'"]');
+            }
+            nodes.forEach(function(n){
+                n.classList.add('aca-blink');
+                n.addEventListener('animationend', function rm(){ n.classList.remove('aca-blink'); n.removeEventListener('animationend', rm); }, {once:true});
+            });
+        }
+
         function showReservationForm(start){
             var modal = document.createElement('div');
             modal.id = 'aca-reserve-modal';
