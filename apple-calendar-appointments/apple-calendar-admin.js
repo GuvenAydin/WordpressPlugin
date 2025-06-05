@@ -1,5 +1,5 @@
 (function(){
-    document.addEventListener('DOMContentLoaded', function(){
+    function init(){
         var textarea = document.getElementById('aca_services');
         var table = document.getElementById('aca-services-table');
         if(textarea && table){
@@ -152,5 +152,11 @@
 
             renderDays();
         }
-    });
+    }
+
+    if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();

@@ -1,5 +1,5 @@
 (function(){
-    document.addEventListener('DOMContentLoaded', function(){
+    function init(){
         var el = document.getElementById('aca-calendar');
         if(!el || typeof FullCalendar === 'undefined') return;
         var opts = window.acaOptions || {};
@@ -127,5 +127,11 @@
                     .catch(function(){ modal.remove(); });
             });
         }
-    });
+    }
+
+    if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
