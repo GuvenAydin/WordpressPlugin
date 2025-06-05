@@ -1,6 +1,6 @@
 # WordPress Plugin: Apple Calendar Appointments
 
-This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.9.3 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
+This plugin displays your Apple Calendar appointments on your WordPress site using a public iCal URL. It has been tested with WordPress 6.5 and version 1.9.4 of the plugin. The plugin files live inside the `apple-calendar-appointments` folder and include styles and scripts for an interactive calendar.
 Separate JavaScript files are included for the public calendar and the admin services table. The admin script now initializes even if the page is already loaded so the Services and Days Off tables work reliably.
 
 ## Installation
@@ -19,7 +19,7 @@ The calendar hides the **All Day** row for a cleaner layout, and reservations ar
 
 Navigation buttons let visitors move to the previous or next day, week or month depending on the current view.
 
-Lunch breaks and days off appear with a pink crosshatch background so visitors clearly see when you are closed. Each day off displays its custom name on the calendar. Lunch breaks show on every working day but disappear whenever that day is fully marked off. Version 1.9.3 fixes the case where lunch breaks could still appear on newly added day-off dates. A **Today** button lets you jump back to the current date at any time. The week view starts on Monday so Saturday and Sunday appear on the right-hand side.
+Lunch breaks and days off appear with a pink crosshatch background so visitors clearly see when you are closed. Each day off displays its custom name on the calendar. Lunch breaks show on every working day but disappear whenever that day is fully marked off. Version 1.9.4 ensures that custom days off also use the crosshatch background. A **Today** button lets you jump back to the current date at any time. The week view starts on Monday so Saturday and Sunday appear on the right-hand side.
 
 Past dates cannot be selected for reservations.
 
