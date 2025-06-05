@@ -11,6 +11,7 @@
         var calendar = new FullCalendar.Calendar(el, {
             initialView: 'timeGridWeek',
             headerToolbar: false,
+            firstDay: 1,
             slotMinTime: opts.workStart || '09:00',
             slotMaxTime: opts.workEnd || '20:00',
             slotLabelFormat: {

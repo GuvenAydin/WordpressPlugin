@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.7.2
+Version: 1.7.3
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.7.2'
+        '1.7.3'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.7.2',
+        '1.7.3',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.7.2'
+            '1.7.3'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.7.2',
+            '1.7.3',
             true
         );
     }
@@ -278,9 +278,11 @@ function aca_render_events() {
             if (!empty($days_off)) {
                 $dates_off = array_filter(array_map('trim', explode(',', $days_off)));
             }
-            $now = new DateTime('now', new DateTimeZone('UTC'));
-            $end = (clone $now)->modify('+1 year');
-            for ($d = clone $now; $d <= $end; $d->modify('+1 day')) {
+            $startDate = new DateTime('now', new DateTimeZone('UTC'));
+            $startDate->modify('-1 year');
+            $endDate = new DateTime('now', new DateTimeZone('UTC'));
+            $endDate->modify('+2 years');
+            for ($d = clone $startDate; $d <= $endDate; $d->modify('+1 day')) {
                 $date = $d->format('Y-m-d');
                 if (in_array($d->format('w'), $week_off, true)) continue;
                 if (in_array($date, $dates_off, true)) continue;
