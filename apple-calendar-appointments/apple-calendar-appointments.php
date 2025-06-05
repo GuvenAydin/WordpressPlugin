@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.3.0
+Version: 1.4.0
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.3.0'
+        '1.4.0'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.3.0',
+        '1.4.0',
         true
     );
 }
@@ -167,6 +167,23 @@ function aca_format_ical_date($v) {
     return $ts ? gmdate('c', $ts) : $v;
 }
 
+function aca_get_services() {
+    $services_raw = get_option('aca_services');
+    $services = [];
+    if ($services_raw) {
+        foreach (preg_split('/\r?\n/', $services_raw) as $line) {
+            $parts = array_map('trim', explode('|', $line));
+            if ($parts[0] === '') continue;
+            $services[$parts[0]] = [
+                'name'     => $parts[0],
+                'price'    => $parts[1] ?? '',
+                'duration' => isset($parts[2]) ? (int) $parts[2] : 0,
+            ];
+        }
+    }
+    return $services;
+}
+
 function aca_render_events() {
     $url    = get_option('aca_ical_url');
     $events = aca_fetch_ical_events($url);
@@ -178,30 +195,22 @@ function aca_render_events() {
     $lunch_end   = get_option('aca_lunch_end');
     $days_off       = get_option('aca_days_off');
     $days_off_week  = (array) get_option('aca_days_off_week', []);
-    $services_raw   = get_option('aca_services');
     $reservations   = get_option('aca_reservations', []);
 
-    $services = [];
-    if ($services_raw) {
-        foreach (preg_split('/\r?\n/', $services_raw) as $line) {
-            $parts = array_map('trim', explode('|', $line));
-            if ($parts[0] === '') continue;
-            $services[] = [
-                'name'     => $parts[0],
-                'price'    => $parts[1] ?? '',
-                'duration' => $parts[2] ?? ''
-            ];
-        }
-    }
+    $services = array_values(aca_get_services());
 
     $formatted = [];
+    $existing  = [];
     foreach ($events as $e) {
         if (empty($e['DTSTART']) || empty($e['SUMMARY'])) continue;
+        $start = aca_format_ical_date($e['DTSTART']);
+        $end   = !empty($e['DTEND']) ? aca_format_ical_date($e['DTEND']) : null;
         $formatted[] = [
             'title' => $e['SUMMARY'],
-            'start' => aca_format_ical_date($e['DTSTART']),
-            'end'   => !empty($e['DTEND']) ? aca_format_ical_date($e['DTEND']) : null,
+            'start' => $start,
+            'end'   => $end,
         ];
+        $existing[$start . '|' . $end] = true;
     }
 
     $closed = [];
@@ -242,11 +251,13 @@ function aca_render_events() {
     if (!empty($reservations)) {
         foreach ($reservations as $res) {
             if (empty($res['start']) || empty($res['end'])) continue;
+            $key   = $res['start'] . '|' . $res['end'];
+            $color = isset($existing[$key]) ? 'green' : 'gray';
             $formatted[] = [
                 'title' => 'Reserved',
                 'start' => $res['start'],
                 'end'   => $res['end'],
-                'color' => 'green'
+                'color' => $color,
             ];
         }
     }
@@ -275,22 +286,39 @@ add_shortcode('apple_calendar_appointments', 'aca_render_events');
 // Handle reservation submission via AJAX
 function aca_save_reservation_callback() {
     $start    = isset($_POST['start']) ? sanitize_text_field($_POST['start']) : '';
-    $end      = isset($_POST['end']) ? sanitize_text_field($_POST['end']) : '';
     $services = isset($_POST['services']) ? array_map('sanitize_text_field', (array) $_POST['services']) : [];
+    $name     = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+    $phone    = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
 
-    if (!$start || !$end) {
+    if (!$start || empty($services) || !$name || !$phone) {
         wp_send_json_error();
     }
+
+    $defs = aca_get_services();
+    $minutes = 0;
+    foreach ($services as $srv) {
+        if (isset($defs[$srv])) {
+            $minutes += (int) $defs[$srv]['duration'];
+        }
+    }
+    if ($minutes <= 0) {
+        wp_send_json_error();
+    }
+
+    $end_ts = strtotime($start) + $minutes * 60;
+    $end    = gmdate('c', $end_ts);
 
     $reservations = get_option('aca_reservations', []);
     $reservations[] = [
         'start'    => $start,
         'end'      => $end,
         'services' => $services,
+        'name'     => $name,
+        'phone'    => $phone,
     ];
     update_option('aca_reservations', $reservations);
 
-    wp_send_json_success();
+    wp_send_json_success(['end' => $end]);
 }
 add_action('wp_ajax_aca_save_reservation', 'aca_save_reservation_callback');
 add_action('wp_ajax_nopriv_aca_save_reservation', 'aca_save_reservation_callback');
