@@ -45,22 +45,24 @@
                 endTime: opts.workEnd || '20:00',
                 daysOfWeek: [0,1,2,3,4,5,6]
             },
-            selectable: true,
+            selectable: !!opts.reservationsEnabled,
             selectOverlap: false,
             selectAllow: function(info){
+                if(!opts.reservationsEnabled) return false;
                 if(info.view.type === 'dayGridMonth') return false;
                 var now = new Date();
                 return info.start >= now;
             },
             events: events,
             select: function(info){
+                if(!opts.reservationsEnabled) return;
                 if(info.view.type === 'dayGridMonth') return;
                 showReservationForm(info.startStr);
             },
             dateClick: function(info){
                 if(info.view.type === 'dayGridMonth'){
                     calendar.changeView('timeGridDay', info.dateStr);
-                } else {
+                } else if(opts.reservationsEnabled){
                     showReservationForm(info.dateStr);
                 }
             },

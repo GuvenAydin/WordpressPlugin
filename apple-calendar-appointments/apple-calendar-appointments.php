@@ -2,7 +2,7 @@
 /*
 Plugin Name: Apple Calendar Appointments
 Description: Display Apple Calendar appointments on your WordPress site via a public iCal URL.
-Version: 1.9.6
+Version: 1.9.7
 Requires at least: 6.0
 Tested up to: 6.5
 Author: OpenAI
@@ -16,7 +16,7 @@ function aca_enqueue_styles() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
         [],
-        '1.9.6'
+        '1.9.7'
     );
 }
 add_action('wp_enqueue_scripts', 'aca_enqueue_styles');
@@ -34,7 +34,7 @@ function aca_enqueue_scripts() {
         'aca-calendar',
         plugin_dir_url(__FILE__) . 'apple-calendar-appointments.js',
         ['fullcalendar'],
-        '1.9.6',
+        '1.9.7',
         true
     );
 }
@@ -47,13 +47,13 @@ function aca_admin_enqueue_scripts($hook) {
             'aca-calendar',
             plugin_dir_url(__FILE__) . 'apple-calendar-appointments.css',
             [],
-            '1.9.6'
+            '1.9.7'
         );
         wp_enqueue_script(
             'aca-calendar-admin',
             plugin_dir_url(__FILE__) . 'apple-calendar-admin.js',
             [],
-            '1.9.6',
+            '1.9.7',
             true
         );
     }
@@ -70,6 +70,7 @@ function aca_register_settings() {
     register_setting('aca_settings_group', 'aca_days_off');
     register_setting('aca_settings_group', 'aca_days_off_week');
     register_setting('aca_settings_group', 'aca_services');
+    register_setting('aca_settings_group', 'aca_enable_reservations');
 }
 add_action('admin_init', 'aca_register_settings');
 
@@ -159,6 +160,10 @@ function aca_render_settings_page() {
                             <button type="button" id="aca-service-add" class="button">Add Service</button>
                         </div>
                     </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="aca_enable_reservations">Enable Reservations</label></th>
+                    <td><input type="checkbox" id="aca_enable_reservations" name="aca_enable_reservations" value="1" <?php checked(get_option('aca_enable_reservations', '1'), '1'); ?> /></td>
                 </tr>
             </table>
             <?php submit_button(); ?>
@@ -362,6 +367,7 @@ function aca_render_events() {
         'closedEvents' => $closed,
         'services'     => $services,
         'ajaxUrl'      => admin_url('admin-ajax.php'),
+        'reservationsEnabled' => get_option('aca_enable_reservations', '1') ? true : false,
     ]);
 
     ob_start();
