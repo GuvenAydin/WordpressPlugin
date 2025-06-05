@@ -14,3 +14,5 @@ Insert the shortcode `[apple_calendar_appointments]` into any post or page. The 
 ### Working hours and days off
 In the settings page you can optionally define your daily working hours, a lunch break, and any specific days off. These settings are used to highlight unavailable time periods on the calendar so visitors see when you are closed.
 
+
+
