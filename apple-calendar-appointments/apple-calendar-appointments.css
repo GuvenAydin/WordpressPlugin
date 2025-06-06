@@ -1,0 +1,64 @@
+#aca-calendar-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+#aca-calendar-title{
+    font-weight:600;
+    margin-right:auto;
+}
+#aca-calendar-controls{
+    display:flex;
+    gap:5px;
+}
+#aca-calendar-controls button{
+    margin:0 5px;
+    padding:6px 12px;
+    background:#0073aa;
+    color:#fff;
+    border:none;
+    border-radius:3px;
+    cursor:pointer;
+}
+#aca-calendar-controls button:hover{
+    background:#005c8f;
+}
+#aca-calendar{
+    max-width:900px;
+    margin:0 auto;
+}
+.aca-calendar{width:100%;max-width:600px;margin:0 auto;border-collapse:collapse;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);} 
+.aca-calendar th,.aca-calendar td{padding:8px 12px;border-bottom:1px solid #e1e1e1;text-align:left;} 
+.aca-calendar th{background:#f5f5f5;font-weight:600;} 
+.aca-calendar tbody tr:nth-child(even){background:#fafafa;}
+#aca-reserve-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;}
+#aca-reserve-modal .aca-modal-content{background:#fff;padding:15px;border-radius:4px;max-width:300px;width:100%;}
+#aca-reserve-modal label{display:block;margin-bottom:4px;}
+#aca-time-info{margin-bottom:8px;font-weight:600;}
+#aca-reserve-modal button{margin-right:5px;margin-top:8px;}
+#aca-services-table{margin-top:10px;}
+#aca-service-form{margin-top:8px;}
+#aca-service-form input{margin-right:5px;}
+#aca-dayoff-table{margin-top:10px;}
+#aca-dayoff-form{margin-top:8px;}
+#aca-dayoff-form input{margin-right:5px;}
+#aca-reservations-table{margin-top:10px;}
+
+.fc-bgevent.aca-closed,
+.fc-bg-event.aca-closed,
+.fc-event.aca-closed{
+    background-color:rgb(255, 234, 234);
+    background-image:repeating-linear-gradient(45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px),
+                     repeating-linear-gradient(-45deg, rgba(255,0,128,0.3) 0, rgba(255,0,128,0.3) 2px, transparent 2px, transparent 4px);
+}
+
+.aca-blink{
+    animation: aca-blink 0.6s ease-in-out 2;
+}
+
+@keyframes aca-blink{
+    from{background-color:#fff3cd;}
+    to{background-color:transparent;}
+}
