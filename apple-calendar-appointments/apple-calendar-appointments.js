@@ -100,7 +100,7 @@
                 if(nav === 'next'){ calendar.next(); return; }
                 if(nav === 'today'){
                     calendar.today();
-                    if(calendar.view.type === 'dayGridMonth' || calendar.view.type === 'timeGridWeek'){
+                    if(calendar.view.type === 'dayGridMonth' || calendar.view.type === 'timeGridWeek' || calendar.view.type === 'timeGridDay'){
                         blinkCurrentDay();
                     }
                     return;
@@ -118,7 +118,7 @@
             var nodes = [];
             if(calendar.view.type === 'dayGridMonth'){
                 nodes = el.querySelectorAll('.fc-daygrid-day[data-date="'+iso+'"]');
-            }else if(calendar.view.type === 'timeGridWeek'){
+            }else if(calendar.view.type === 'timeGridWeek' || calendar.view.type === 'timeGridDay'){
                 nodes = el.querySelectorAll('.fc-timegrid-col[data-date="'+iso+'"], .fc-col-header-cell[data-date="'+iso+'"]');
             }
             nodes.forEach(function(n){
